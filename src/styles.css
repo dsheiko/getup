@@ -210,7 +210,6 @@ h1 {
 .hero[data-tone="accent"] { --tone: var(--accent); }
 .hero[data-tone="paused"] { --tone: var(--paused); }
 .hero[data-tone="good"] { --tone: var(--good); }
-.hero[data-tone="warning"] { --tone: var(--warning); }
 .hero[data-tone="critical"] { --tone: var(--critical); }
 
 .ring {

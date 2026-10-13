@@ -11,7 +11,7 @@
       back: "Back",
 
       ringUntil: "until break",
-      ringSitting: "sitting",
+      ringOverdue: "overdue",
       ringOnBreak: "break",
       nextBreakAt: (time) => `Next break at ${time}`,
       lastBreak: (time, length) => (length ? `Last break at ${time}, ${length}` : `Last break at ${time}`),
@@ -95,7 +95,7 @@
       back: "Назад",
 
       ringUntil: "до перерыва",
-      ringSitting: "сидишь",
+      ringOverdue: "сверх срока",
       ringOnBreak: "перерыв",
       nextBreakAt: (time) => `Следующий перерыв в ${time}`,
       lastBreak: (time, length) => (length ? `Последний перерыв в ${time}, ${length}` : `Последний перерыв в ${time}`),

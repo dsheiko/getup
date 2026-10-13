@@ -40,7 +40,7 @@ Don't turn it into a workout. The point is to break up hours of sitting in the s
 - **Reminders every 30, 35, 40 or 45 minutes**: a Windows notification plus a small window with the checklist above. The window appears without taking focus, so it never interrupts your typing.
 - **Automatic break detection**: 3 minutes away from the mouse and keyboard (90 seconds once a break is due), locking the screen for over a minute, or sleep all count as a break, and the timer starts over.
 - **Gentle persistence**: if you ignore a reminder, it comes back after 10 minutes. "In 5 min" snoozes it.
-- **Tray icon that shows the countdown**: its edge fills up while you sit. Blue: counting down. Yellow: time to stand up. Red: 15+ minutes overdue. Green: on a break. Grey pause badge: reminders paused.
+- **Tray icon that shows the countdown**: its edge fills up while you sit. Blue: counting down. Red: time to stand up, and the window keeps counting the overtime (+05:12) until you take a break. Green: on a break. Grey pause badge: reminders paused.
 - **Pause for calls**: pause until you resume, or for 30 min, 1 hour or 2 hours from the tray menu. The countdown stands still and continues where it stopped.
 - **Log a break by hand**: "Log a break" starts one, and it ends when you press "End break" or come back to the computer.
 - **Daily stats**: number of breaks, your longest stretch without a break, and a timeline of the day (green up to 45 min, yellow 45–90, red over 90). A 7-day view shows the longest stretch for each day.

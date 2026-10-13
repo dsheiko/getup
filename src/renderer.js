@@ -2,7 +2,6 @@ const { STRINGS, formatClock, formatDuration, formatTime } = window.GetupI18n;
 
 const MIN = 60 * 1000;
 const HOUR = 60 * MIN;
-const OVERDUE = 15 * MIN;       // this far past the interval, the ring turns red
 const GOOD_STRETCH = 45 * MIN;  // advice: no more than 30–45 minutes in a row
 const LONG_STRETCH = 90 * MIN;
 const INTERVALS = [30, 35, 40, 45];
@@ -134,11 +133,12 @@ function describe(mode, muted, elapsed, now) {
     } else if (state.nextReminderAt > now) {
       detail = s.remindAgainAt(formatTime(state.nextReminderAt));
     }
+    // the countdown doesn't start over: it keeps going past zero as overtime, in red
     return {
-      tone: elapsed - state.interval >= OVERDUE ? "critical" : "warning",
+      tone: "critical",
       progress: 1,
-      time: formatClock(elapsed),
-      label: s.ringSitting,
+      time: `+${formatClock(elapsed - state.interval)}`,
+      label: s.ringOverdue,
       headline: s.timeToStand,
       detail,
     };
@@ -175,7 +175,7 @@ function renderLive(now) {
   ring.style.strokeDashoffset = String(RING_LENGTH * (1 - Math.min(1, view.progress)));
   ring.style.opacity = view.progress > 0.005 ? "1" : "0";
   $("ring-time").textContent = view.time;
-  $("ring-time").classList.toggle("is-long", view.time.length > 5);
+  $("ring-time").classList.toggle("is-long", view.time.length > 6); // fits up to +59:59
   $("ring-label").textContent = view.label;
   $("headline").textContent = view.headline;
   $("detail").textContent = view.detail;
@@ -200,12 +200,20 @@ function renderLive(now) {
 
 /* reminder: sound and window flash */
 
-function playChime(isRepeat) {
+// Wait until the audio context is running: a new one (or one suspended while the window was hidden)
+// starts with its clock stopped, and notes scheduled before that are already over when it starts
+async function playChime(isRepeat) {
   audio = audio || new AudioContext();
-  audio.resume();
+  try {
+    await audio.resume();
+  } catch (error) {
+    console.warn("Could not start audio", error);
+    return;
+  }
   const notes = isRepeat ? [660, 880, 1320] : [660, 990];
+  const at = audio.currentTime + 0.05;
   notes.forEach((frequency, i) => {
-    const start = audio.currentTime + i * 0.22;
+    const start = at + i * 0.22;
     const tone = audio.createOscillator();
     const gain = audio.createGain();
     tone.type = "sine";
