@@ -2,18 +2,41 @@
   "name": "getup",
   "productName": "Getup",
   "version": "1.0.0",
-  "description": "Tray reminder to stand up every 30–45 minutes",
+  "private": true,
+  "description": "Fight computer neck: a Windows tray app that gets you up from the desk every 30–45 minutes for a short neck-and-shoulders break. Detects breaks automatically.",
+  "keywords": [
+    "computer-neck",
+    "tech-neck",
+    "neck-pain",
+    "posture",
+    "break-reminder",
+    "ergonomics",
+    "health",
+    "electron",
+    "windows",
+    "tray"
+  ],
+  "homepage": "https://github.com/dsheiko/getup#readme",
+  "bugs": {
+    "url": "https://github.com/dsheiko/getup/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsheiko/getup.git"
+  },
+  "author": "Dmitry Sheiko",
+  "license": "ISC",
   "main": "src/main.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "electron .",
     "debug": "electron . --interval=5",
     "test": "node --test",
     "dist": "electron-builder --win"
   },
-  "keywords": [],
-  "author": "Dmitry Sheiko",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "electron": "^41.7.1",
     "electron-builder": "^26.0.12"

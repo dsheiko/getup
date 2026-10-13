@@ -1,0 +1,6 @@
+# normalize line endings in the repo; PowerShell scripts keep CRLF on checkout
+* text=auto
+*.ps1 text eol=crlf
+
+*.png binary
+*.ico binary
