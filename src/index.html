@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getup</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- shown until the first state from main arrives: the texts depend on the language setting -->
+    <div class="splash" id="splash" aria-hidden="true">
+      <img src="icon-64.png" alt="" />
+      <svg class="splash-spinner" viewBox="0 0 24 24">
+        <circle class="splash-track" cx="12" cy="12" r="9" />
+        <circle class="splash-arc" cx="12" cy="12" r="9" />
+      </svg>
+    </div>
+
+    <div id="app" aria-busy="true">
+      <section id="view-main">
+        <header class="top">
+          <div class="brand"><img src="icon-64.png" alt="" /></div>
+          <div class="top-text">
+            <h1>Getup</h1>
+            <p class="sub" id="schedule"></p>
+          </div>
+          <button class="icon-button" id="open-settings" data-i18n-label="settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+        </header>
+
+        <div class="hero" id="hero" role="status" aria-live="polite">
+          <div class="ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-track" cx="60" cy="60" r="52" />
+              <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52" />
+            </svg>
+            <div class="ring-text">
+              <span class="ring-time" id="ring-time">30:00</span>
+              <span class="ring-label" id="ring-label"></span>
+            </div>
+          </div>
+          <div class="hero-text">
+            <p class="headline" id="headline"></p>
+            <p class="detail" id="detail"></p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="button" id="take-break"></button>
+          <button class="button" id="snooze" data-i18n="snooze"></button>
+          <button class="button" id="pause"></button>
+        </div>
+
+        <section class="card checklist" id="checklist" hidden>
+          <h2 data-i18n="checklistTitle"></h2>
+          <ol id="checklist-items"></ol>
+          <p class="note" data-i18n="checklistNote"></p>
+        </section>
+
+        <section class="card" id="stats">
+          <div class="tabs" role="tablist">
+            <button role="tab" id="tab-today" aria-controls="panel-today" aria-selected="true" data-i18n="tabToday"></button>
+            <button role="tab" id="tab-week" aria-controls="panel-week" aria-selected="false" data-i18n="tabWeek"></button>
+          </div>
+
+          <div id="panel-today" role="tabpanel" aria-labelledby="tab-today">
+            <div class="tiles">
+              <div class="tile">
+                <span class="tile-label" data-i18n="breaks"></span>
+                <span class="tile-value" id="stat-breaks">0</span>
+              </div>
+              <div class="tile">
+                <span class="tile-label" data-i18n="longest"></span>
+                <span class="tile-value" id="stat-longest">0</span>
+              </div>
+              <div class="tile">
+                <span class="tile-label" data-i18n="total"></span>
+                <span class="tile-value" id="stat-total">0</span>
+              </div>
+            </div>
+            <div class="timeline" id="timeline"></div>
+            <div class="axis"><span id="axis-start"></span><span id="axis-end"></span></div>
+            <div class="legend">
+              <span><i data-tone="good"></i><span data-i18n="legendGood"></span></span>
+              <span><i data-tone="warning"></i><span data-i18n="legendLong"></span></span>
+              <span><i data-tone="critical"></i><span data-i18n="legendTooLong"></span></span>
+            </div>
+            <details class="stretches">
+              <summary data-i18n="stretchList"></summary>
+              <ol class="stretch-list" id="stretch-list"></ol>
+            </details>
+          </div>
+
+          <div id="panel-week" role="tabpanel" aria-labelledby="tab-week" hidden>
+            <div class="week-head">
+              <span data-i18n="weekTitle"></span>
+              <span class="target-key"><i></i><span data-i18n="target"></span></span>
+            </div>
+            <div class="week-plot" id="week-plot">
+              <div class="week-target" id="week-target"></div>
+            </div>
+            <div class="week-days" id="week-days"></div>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-settings" hidden>
+        <header class="top">
+          <button class="icon-button" id="close-settings" data-i18n-label="back">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <div class="top-text"><h1 data-i18n="settings"></h1></div>
+        </header>
+
+        <div class="field">
+          <span class="field-label" data-i18n="intervalLabel"></span>
+          <div class="segmented" id="interval-options"></div>
+          <p class="field-hint" data-i18n="intervalHint"></p>
+        </div>
+
+        <label class="toggle-row">
+          <span>
+            <span class="toggle-title" data-i18n="showWindow"></span>
+            <span class="toggle-hint" data-i18n="showWindowHint"></span>
+          </span>
+          <input type="checkbox" class="switch" id="setting-show-window" />
+        </label>
+
+        <label class="toggle-row">
+          <span>
+            <span class="toggle-title" data-i18n="sound"></span>
+            <span class="toggle-hint" data-i18n="soundHint"></span>
+          </span>
+          <input type="checkbox" class="switch" id="setting-sound" />
+        </label>
+
+        <label class="toggle-row" id="row-login">
+          <span><span class="toggle-title" id="login-label"></span></span>
+          <input type="checkbox" class="switch" id="setting-login" />
+        </label>
+
+        <div class="field">
+          <span class="field-label" data-i18n="language"></span>
+          <div class="segmented" id="lang-options"></div>
+        </div>
+
+        <p class="rules" data-i18n="breakRules"></p>
+
+        <footer class="about">
+          <p><strong>Getup</strong> <span id="app-version"></span></p>
+          <p data-i18n="aboutText"></p>
+          <p data-i18n="aboutAuthor"></p>
+        </footer>
+      </section>
+    </div>
+
+    <div class="tooltip" id="tooltip" role="tooltip" hidden>
+      <strong id="tooltip-value"></strong>
+      <span id="tooltip-label"></span>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>

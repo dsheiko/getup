@@ -1,0 +1,42 @@
+{
+  "name": "getup",
+  "productName": "Getup",
+  "version": "1.0.0",
+  "description": "Tray reminder to stand up every 30–45 minutes",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "debug": "electron . --interval=5",
+    "test": "node --test",
+    "dist": "electron-builder --win"
+  },
+  "keywords": [],
+  "author": "Dmitry Sheiko",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^41.7.1",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "stand-up.reminder",
+    "productName": "Getup",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": false,
+      "shortcutName": "Getup"
+    }
+  }
+}

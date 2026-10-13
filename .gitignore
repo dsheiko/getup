@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build output (npm run dist / build.ps1)
+dist/
+build.log
+
+# logs
+*.log
+npm-debug.log*
+
+# local environment
+.env
+.env.*
+
+# editors and tools
+.vscode/
+.idea/
+.claude/settings.local.json
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store
