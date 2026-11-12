@@ -13,7 +13,8 @@ const MIN_STRETCH = MIN;           // very short stretches are not logged
 const KEEP_DAYS = 60;
 const FOREVER = Number.MAX_SAFE_INTEGER;
 
-const INTERVALS = [30, 35, 40, 45];
+const MIN_INTERVAL = 5;            // minutes; custom interval range
+const MAX_INTERVAL = 180;
 const LANGS = ["en", "ru"];
 const DEFAULT_SETTINGS = { interval: 30, showWindow: true, sound: true, openAtLogin: true, lang: null };
 
@@ -26,7 +27,7 @@ function dayKey(ms) {
 
 function cleanSettings(current, patch) {
   const next = { ...current };
-  if (INTERVALS.includes(patch.interval)) {
+  if (Number.isInteger(patch.interval) && patch.interval >= MIN_INTERVAL && patch.interval <= MAX_INTERVAL) {
     next.interval = patch.interval;
   }
   if (typeof patch.showWindow === "boolean") {
@@ -61,8 +62,7 @@ class Tracker {
     this.days = data.days || {};
     this.sittingSince = now;
     this.awaySince = null;
-    this.isOnManualBreak = false; // started with the "Log a break" button
-    this.hasLeftDesk = false;     // during a manual break: was away long enough to count as gone
+    this.isOnManualBreak = false; // started with the "Log a break" button, lasts until "End break"
     this.lastBreak = null;
     this.mutedUntil = null;
     this.mutedAt = null;
@@ -119,7 +119,6 @@ class Tracker {
     // the computer slept or the process hung: that's a break too
     if (now - this.lastTickAt > IDLE_BREAK) {
       this.endSitting(this.lastTickAt);
-      this.hasLeftDesk = true;
     }
     this.lastTickAt = now;
 
@@ -131,15 +130,9 @@ class Tracker {
     }
 
     if (this.sittingSince === null) {
-      // a manual break doesn't end on the button click itself, only on "End break"
-      // or when you come back after being away from the mouse and keyboard
+      // a manual break ends only on "End break", not when you come back to the mouse and keyboard
       if (this.isOnManualBreak) {
-        if (idleMs >= IDLE_BREAK_DUE) {
-          this.hasLeftDesk = true;
-        }
-        if (!this.hasLeftDesk) {
-          return false;
-        }
+        return false;
       }
       if (idleMs < IDLE_BACK) {
         this.startSitting(now - idleMs);
@@ -167,7 +160,6 @@ class Tracker {
     }
     this.awaySince = null;
     this.isOnManualBreak = false;
-    this.hasLeftDesk = false;
     this.sittingSince = at;
     this.pausedMs = 0;
     this.nextReminderAt = at + this.intervalMs();
@@ -192,11 +184,10 @@ class Tracker {
     this.save();
   }
 
-  // "Log a break": sitting stops now, the break lasts until endBreak() or until you're back
+  // "Log a break": sitting stops now, the break lasts until endBreak()
   startBreak(now) {
     this.endSitting(now);
     this.isOnManualBreak = true;
-    this.hasLeftDesk = false;
   }
 
   endBreak(now) {
@@ -252,14 +243,12 @@ class Tracker {
   unlock(now) {
     if (this.lockedAt !== null && now - this.lockedAt >= MIN) {
       this.endSitting(this.lockedAt);
-      this.hasLeftDesk = true;
     }
     this.lockedAt = null;
   }
 
   suspend(now) {
     this.endSitting(now);
-    this.hasLeftDesk = true;
   }
 
   updateSettings(patch, now) {

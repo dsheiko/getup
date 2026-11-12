@@ -634,7 +634,52 @@ h2 {
   background: var(--track);
 }
 
-.segmented button { flex: 1; height: 30px; }
+.segmented button {
+  flex: 1;
+  height: 30px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.interval-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.interval-row .segmented { flex: 1 1 220px; }
+
+.custom-interval {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+}
+
+.custom-interval input {
+  width: 72px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--button-border);
+  border-radius: 8px;
+  background: var(--button);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 550;
+  text-align: center;
+}
+
+.custom-interval input::placeholder { color: var(--muted); font-weight: 400; }
+
+.custom-interval input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.custom-interval input.is-active {
+  border-color: var(--accent);
+  box-shadow: var(--raised);
+}
 
 .toggle-row {
   display: flex;

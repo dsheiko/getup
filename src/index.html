@@ -119,7 +119,13 @@
 
         <div class="field">
           <span class="field-label" data-i18n="intervalLabel"></span>
-          <div class="segmented" id="interval-options"></div>
+          <div class="interval-row">
+            <div class="segmented" id="interval-options"></div>
+            <label class="custom-interval">
+              <input type="number" id="interval-custom" min="5" max="180" step="1" inputmode="numeric" data-i18n-placeholder="intervalCustom" data-i18n-label="intervalCustomLabel">
+              <span id="interval-custom-unit"></span>
+            </label>
+          </div>
           <p class="field-hint" data-i18n="intervalHint"></p>
         </div>
 

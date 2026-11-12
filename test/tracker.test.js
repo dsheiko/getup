@@ -143,15 +143,20 @@ test("Log a break lasts until End break, even with the mouse in use", () => {
   assert.strictEqual(tracker.snapshot(now).isOnManualBreak, false);
 });
 
-test("a manual break ends by itself when you come back after being away", () => {
+test("a manual break does not end when you come back after being away, only on End break", () => {
   run(20 * MIN);
   const breakStart = now;
   tracker.startBreak(now);
-  run(3 * MIN, "away");
+  run(15 * MIN, "away");
+  run(5 * MIN);
+  tracker.lock(now);
+  tracker.unlock(now + 2 * MIN);
+  now += 2 * MIN;
   run(TICK);
-  assert.notStrictEqual(tracker.sittingSince, null, "back at the desk");
-  assert.strictEqual(tracker.lastBreak.start, breakStart);
-  assert.ok(tracker.lastBreak.end - breakStart >= 3 * MIN);
+  assert.strictEqual(tracker.sittingSince, null, "still on the break");
+  assert.strictEqual(reminders, 0);
+  tracker.endBreak(now);
+  assert.deepStrictEqual(tracker.lastBreak, { start: breakStart, end: now });
 });
 
 test("short screen lock is ignored, a longer one is a break", () => {
@@ -208,9 +213,19 @@ test("clearing history forgets logged stretches, keeps settings and the countdow
 });
 
 test("settings ignore unknown values", () => {
-  tracker.updateSettings({ interval: 99, lang: "de", showWindow: false }, now);
+  tracker.updateSettings({ interval: 999, lang: "de", showWindow: false }, now);
+  tracker.updateSettings({ interval: 2 }, now);
+  tracker.updateSettings({ interval: 42.5 }, now);
+  tracker.updateSettings({ interval: "60" }, now);
   assert.deepStrictEqual(tracker.settings, { interval: 30, showWindow: false, sound: true, openAtLogin: true, lang: null });
   tracker.updateSettings({ interval: 45, lang: "ru" }, now);
   assert.strictEqual(tracker.settings.interval, 45);
   assert.strictEqual(new Tracker(file, now).settings.lang, "ru");
+});
+
+test("settings accept a custom interval in whole minutes", () => {
+  tracker.updateSettings({ interval: 60 }, now);
+  assert.strictEqual(tracker.settings.interval, 60);
+  assert.strictEqual(tracker.snapshot(now).interval, 60 * MIN);
+  assert.strictEqual(new Tracker(file, now).settings.interval, 60);
 });

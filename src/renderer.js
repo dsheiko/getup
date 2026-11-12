@@ -5,6 +5,8 @@ const HOUR = 60 * MIN;
 const GOOD_STRETCH = 45 * MIN;  // advice: no more than 30–45 minutes in a row
 const LONG_STRETCH = 90 * MIN;
 const INTERVALS = [30, 35, 40, 45];
+const MIN_INTERVAL = 5;  // keep in sync with tracker.js
+const MAX_INTERVAL = 180;
 const LANGS = [["en", "English"], ["ru", "Русский"]];
 const RING_LENGTH = 2 * Math.PI * 52;
 const WEEK_BAR_MAX = 64;
@@ -93,6 +95,10 @@ function applyStrings() {
     node.setAttribute("aria-label", s[node.dataset.i18nLabel]);
     node.title = s[node.dataset.i18nLabel];
   }
+  for (const node of document.querySelectorAll("[data-i18n-placeholder]")) {
+    node.placeholder = s[node.dataset.i18nPlaceholder];
+  }
+  $("interval-custom-unit").textContent = s.units.min;
   $("checklist-items").replaceChildren(...s.checklist.map((text) => el("li", "", text)));
   $("login-label").textContent = s.openAtLogin[state.platform] || s.openAtLogin.win32;
 
@@ -337,9 +343,15 @@ function renderWeek(now) {
 
 function renderSettings() {
   $("schedule").textContent = s.every(Math.round((state.interval / MIN) * 10) / 10);
+  const { interval } = state.settings;
   for (const button of $("interval-options").children) {
-    button.setAttribute("aria-pressed", String(Number(button.dataset.value) === state.settings.interval));
+    button.setAttribute("aria-pressed", String(Number(button.dataset.value) === interval));
   }
+  const custom = $("interval-custom");
+  if (document.activeElement !== custom) {
+    custom.value = INTERVALS.includes(interval) ? "" : String(interval);
+  }
+  custom.classList.toggle("is-active", !INTERVALS.includes(interval));
   for (const button of $("lang-options").children) {
     button.setAttribute("aria-pressed", String(button.dataset.value === state.lang));
   }
@@ -540,6 +552,22 @@ $("close-settings").addEventListener("click", () => showView("main"));
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !$("view-settings").hidden) {
     showView("main");
+  }
+});
+
+$("interval-custom").addEventListener("change", (event) => {
+  const minutes = Math.round(Number(event.target.value));
+  if (event.target.value.trim() === "" || !Number.isFinite(minutes)) {
+    renderSettings(); // empty or junk: show the current value again
+    return;
+  }
+  const clamped = Math.min(MAX_INTERVAL, Math.max(MIN_INTERVAL, minutes));
+  event.target.value = String(clamped);
+  window.getup.updateSettings({ interval: clamped });
+});
+$("interval-custom").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.target.blur();
   }
 });
 
